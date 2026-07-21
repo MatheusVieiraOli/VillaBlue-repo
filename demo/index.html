@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Villa Blué — Cozinha Mediterrânea no Recreio, RJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lenis/dist/lenis.min.js"></script>
+<style>
+  :root{
+    --navy:#0e2138;
+    --navy-2:#132a45;
+    --navy-3:#1c3a5e;
+    --gold:#c9a24d;
+    --gold-light:#e6cd8d;
+    --cream:#f6f1e6;
+    --ink:#f6f1e6;
+    --muted:#b9c4d1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--navy);
+    color:var(--ink);
+    font-family:'Poppins',sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    user-select:none;
+  }
+  input, textarea{
+    -webkit-user-select:text;
+    -moz-user-select:text;
+    user-select:text;
+  }
+  h1,h2,h3,.script{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    letter-spacing:.3px;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* nav */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(14,33,56,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(201,162,77,.25);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-mark{height:36px;width:auto;display:block}
+  .brand-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream);letter-spacing:.3px}
+  .brand-name em{font-style:italic;color:var(--gold-light)}
+  .nav-links{display:flex;gap:34px;font-size:14px;letter-spacing:.5px}
+  .nav-links a{opacity:.85;transition:opacity .2s}
+  .nav-links a:hover{opacity:1;color:var(--gold-light)}
+  .btn-gold{
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    color:var(--navy);font-weight:600;font-size:13.5px;letter-spacing:.4px;
+    padding:11px 22px;border-radius:30px;display:inline-flex;align-items:center;gap:8px;
+    transition:transform .2s, box-shadow .2s;
+  }
+  .btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(201,162,77,.35)}
+  .btn-outline{
+    border:1px solid rgba(246,241,230,.4);color:var(--cream);
+    padding:10px 21px;border-radius:30px;font-size:13.5px;letter-spacing:.4px;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-outline:hover{border-color:var(--gold)}
+  @media(max-width:840px){.nav-links{display:none}}
+
+  /* hero */
+  .hero{
+    position:relative;overflow:hidden;padding:160px 0 120px;
+    background-image:
+      linear-gradient(180deg, rgba(14,33,56,.45), rgba(14,33,56,.87) 62%, var(--navy) 97%),
+      linear-gradient(0deg, rgba(14,33,56,.3), rgba(14,33,56,.3)),
+      url('../assets/mural-polvo-fachada.jpg');
+    background-size:cover;
+    background-position:center 30%;
+    text-align:center;
+  }
+  .hero-inner{position:relative;z-index:2}
+  .hero-logo{height:92px;width:auto;margin:0 auto 16px;filter:drop-shadow(0 10px 24px rgba(0,0,0,.55))}
+  .hero-name{display:block;font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--gold-light);letter-spacing:.5px;margin-bottom:26px}
+
+  /* brilho de água suave atrás do conteúdo do hero, não interfere na leitura */
+  .hero-shimmer{
+    position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;
+    background:
+      radial-gradient(ellipse 60% 40% at 25% 20%, rgba(201,162,77,.16), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 78% 70%, rgba(201,162,77,.13), transparent 60%);
+    background-size:180% 180%;
+    animation:causticDrift 22s ease-in-out infinite;
+  }
+  @keyframes causticDrift{
+    0%,100%{background-position:0% 0%, 100% 100%}
+    50%{background-position:30% 20%, 70% 80%}
+  }
+
+  /* onda decorativa entre seções, tema de água do restaurante */
+  .wave-divider{position:relative;height:46px;overflow:hidden;line-height:0;pointer-events:none}
+  .wave-divider svg{display:block;width:200%;height:100%;animation:waveScroll 20s linear infinite}
+  .wave-divider.on-navy-2 path{fill:var(--navy-2)}
+  .wave-divider.on-navy path{fill:var(--navy)}
+  @keyframes waveScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .hero .wave-divider{position:absolute;left:0;right:0;bottom:-1px;z-index:3;height:52px}
+
+  /* bolhas subindo, usado na seção de vinhos */
+  .bubbles{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .bubbles span{
+    position:absolute;bottom:-40px;display:block;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(230,205,141,.55), rgba(201,162,77,.08));
+    animation:bubbleUp linear infinite;
+  }
+  @keyframes bubbleUp{
+    0%{transform:translateY(0) translateX(0);opacity:0}
+    10%{opacity:.55}
+    90%{opacity:.35}
+    100%{transform:translateY(-620px) translateX(var(--drift,20px));opacity:0}
+  }
+  /* densidade menor em telas pequenas, reaproveitado nas seções diferenciais e prévia do cardápio */
+  @media(max-width:900px){.bubbles span:nth-child(n+6){display:none}}
+  @media(max-width:600px){.bubbles span:nth-child(n+4){display:none}}
+
+  /* onda vertical, mesma linguagem da onda horizontal do hero, usada nas laterais da prévia do cardápio */
+  .wave-vertical{position:absolute;top:0;bottom:0;width:64px;pointer-events:none;opacity:.28;z-index:0}
+  .wave-vertical.left{left:0}
+  .wave-vertical.right{right:0}
+  .wave-vertical svg{width:100%;height:100%;display:block}
+  .wave-vertical path{fill:none;stroke:var(--gold);stroke-opacity:.5;stroke-width:1.5}
+  .wave-vertical.left svg{animation:waveSwayLeft 9s ease-in-out infinite}
+  .wave-vertical.right svg{animation:waveSwayRight 11s ease-in-out infinite 1.5s}
+  @keyframes waveSwayLeft{0%,100%{transform:translateY(0)}50%{transform:translateY(14px)}}
+  @keyframes waveSwayRight{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  @media(max-width:900px){.wave-vertical{width:32px;opacity:.16}}
+  @media(max-width:600px){.wave-vertical{display:none}}
+
+  /* revelar ao rolar */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s ease}
+  .reveal.in-view{opacity:1;transform:translateY(0)}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .hero-shimmer, .wave-divider svg, .bubbles span, .wave-vertical svg{animation:none}
+    .hero-logo, .hero-name, .hero .eyebrow, .hero h1, .hero p.sub, .hero-cta, .scroll-cue{animation:none !important;opacity:1 !important;transform:none !important}
+    .scroll-cue .cue-line{animation:none !important}
+    .back-to-top{transition:opacity .01s, transform .01s}
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    color:var(--gold-light);font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  .eyebrow .ln{width:26px;height:1px;background:var(--gold)}
+  .hero h1{font-size:56px;color:var(--cream);max-width:760px;margin:0 auto 20px}
+  .hero h1 em{font-style:italic;color:var(--gold-light)}
+  .hero p.sub{max-width:520px;margin:0 auto 36px;color:var(--muted);font-size:16px}
+  .hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  @media(max-width:600px){.hero h1{font-size:38px}}
+
+  /* entrada da headline, uma vez, ao carregar */
+  @keyframes heroRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  .hero-logo{animation:heroRise .8s ease .05s both}
+  .hero-name{animation:heroRise .8s ease .15s both}
+  .hero .eyebrow{animation:heroRise .8s ease .25s both}
+  .hero h1{animation:heroRise .9s ease .35s both}
+  .hero p.sub{animation:heroRise .9s ease .5s both}
+  .hero-cta{animation:heroRise .9s ease .65s both}
+
+  /* convite pra rolar */
+  .scroll-cue{
+    display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-top:44px;
+    color:var(--gold-light);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    animation:heroRise .9s ease .85s both;transition:opacity .3s ease;
+  }
+  .scroll-cue .cue-line{width:1px;height:34px;background:linear-gradient(180deg, var(--gold), transparent);animation:cueFlow 2.2s ease-in-out infinite}
+  @keyframes cueFlow{0%,100%{transform:scaleY(1);opacity:.9}50%{transform:scaleY(.7);opacity:.5}}
+  .scroll-cue:hover{opacity:.75}
+
+  /* faixa destaques */
+  .strip{
+    border-top:1px solid rgba(201,162,77,.2);
+    border-bottom:1px solid rgba(201,162,77,.2);
+    background:var(--navy-2);
+  }
+  .strip .wrap{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    padding:26px 24px;
+  }
+  .strip-item{text-align:center;padding:10px 12px;border-left:1px solid rgba(201,162,77,.15)}
+  .strip-item:first-child{border-left:none}
+  .strip-item .n{color:var(--gold-light);font-family:'Cormorant Garamond',serif;font-size:26px;display:block;margin-bottom:4px}
+  .strip-item .t{font-size:12px;color:var(--muted);letter-spacing:.3px}
+  @media(max-width:700px){.strip .wrap{grid-template-columns:repeat(2,1fr);gap:18px 0}.strip-item{border-left:none}}
+
+  /* seções genéricas */
+  section{padding:96px 0}
+  .section-head{text-align:center;max-width:600px;margin:0 auto 56px}
+  .section-head h2{font-size:38px;color:var(--cream)}
+  .section-head p{color:var(--muted);margin-top:14px;font-size:15px}
+
+  /* diferenciais e prévia do cardápio ganham bolhas de fundo; conteúdo precisa ficar acima */
+  /* sem overflow:hidden aqui: quebraria o sticky de .menu-photos dentro de #cardapio.
+     bolhas e onda vertical já se contêm sozinhas (inset:0 / top:0;bottom:0). */
+  #diferenciais, #cardapio{position:relative}
+  #diferenciais > .wrap, #cardapio > .wrap{position:relative;z-index:1}
+
+  /* diferenciais — cards com foto real, sem ícone/emoji */
+  .diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .diff-card{
+    position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/5;
+    border:1px solid rgba(201,162,77,.25);transition:border-color .25s, transform .25s;
+  }
+  .diff-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+  .diff-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+  .diff-card:hover img{transform:scale(1.08)}
+  .diff-card::after{
+    content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg, rgba(14,33,56,0) 32%, rgba(14,33,56,.72) 66%, rgba(14,33,56,.96) 100%);
+  }
+  .diff-content{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:22px}
+  .diff-content .num{font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:13px;letter-spacing:1px;display:block;margin-bottom:6px}
+  .diff-content h3{font-size:21px;color:var(--gold-light);margin-bottom:6px;font-weight:600}
+  .diff-content p{font-size:13px;color:var(--cream);opacity:.92;line-height:1.5}
+  @media(max-width:800px){.diff-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.diff-grid{grid-template-columns:1fr}.diff-card{aspect-ratio:16/10}}
+
+  /* cardápio */
+  .menu-tabs{display:flex;gap:10px;justify-content:center;margin-bottom:44px;flex-wrap:wrap}
+  .menu-tab{
+    padding:9px 20px;border-radius:30px;font-size:13px;letter-spacing:.3px;cursor:pointer;
+    border:1px solid rgba(201,162,77,.3);color:var(--muted);
+  }
+  .menu-tab.active{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 60px;max-width:900px;margin:0 auto}
+  .menu-cat{display:none;grid-column:1 / -1;grid-template-columns:1fr 1fr;gap:0 60px}
+  .menu-cat.active{display:grid}
+  .menu-row{display:flex;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px dashed rgba(201,162,77,.22)}
+  .menu-row .nm{color:var(--cream);font-size:15.5px}
+  .menu-row .ds{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .menu-row .pr{color:var(--gold-light);font-size:15px;white-space:nowrap;font-family:'Cormorant Garamond',serif;font-weight:600}
+  .menu-note{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;opacity:.75}
+  @media(max-width:640px){.menu-cat{grid-template-columns:1fr}}
+
+  .menu-layout{display:grid;grid-template-columns:.85fr 1.3fr;gap:50px;align-items:start;max-width:1040px;margin:0 auto}
+  .menu-photos{position:sticky;top:100px}
+  .menu-photos .tag{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);margin-bottom:14px}
+  .menu-photo-card{position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(201,162,77,.25);margin-bottom:16px}
+  .menu-photo-card img{width:100%;height:210px;object-fit:cover;display:block}
+  .menu-photo-card .cap{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;font-size:12.5px;color:var(--cream);background:linear-gradient(0deg, rgba(0,0,0,.65), transparent)}
+  @media(max-width:800px){.menu-layout{grid-template-columns:1fr}.menu-photos{position:static;display:flex;gap:16px}.menu-photo-card{flex:1;margin-bottom:0}.menu-photo-card img{height:150px}}
+
+  /* reserva */
+  .reserva{
+    background:var(--navy-2);border-top:1px solid rgba(201,162,77,.2);border-bottom:1px solid rgba(201,162,77,.2);
+  }
+  .reserva-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .reserva-info h2{font-size:34px;color:var(--cream);margin-bottom:16px}
+  .reserva-info p{color:var(--muted);font-size:15px;margin-bottom:22px}
+  .reserva-info ul{list-style:none;font-size:14px;color:var(--muted)}
+  .reserva-info li{padding:6px 0;display:flex;gap:10px}
+  .reserva-info li::before{content:"◆";color:var(--gold);font-size:9px;margin-top:6px}
+  form.card{
+    background:var(--navy);border:1px solid rgba(201,162,77,.25);border-radius:16px;padding:32px;
+  }
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12px;letter-spacing:.4px;color:var(--gold-light);margin-bottom:7px}
+  .field input, .field select{
+    width:100%;background:var(--navy-2);border:1px solid rgba(201,162,77,.25);
+    border-radius:8px;padding:11px 13px;color:var(--cream);font-family:inherit;font-size:14px;
+  }
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  form .btn-gold{width:100%;justify-content:center;margin-top:6px;border:none;font-size:14.5px;padding:13px}
+  @media(max-width:800px){.reserva-grid{grid-template-columns:1fr}}
+
+  /* ambiente */
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .gal-card{
+    aspect-ratio:3/4;border-radius:12px;overflow:hidden;position:relative;
+    display:flex;align-items:flex-end;padding:16px;
+    border:1px solid rgba(201,162,77,.2);
+  }
+  .gal-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
+  .gal-card:hover img{transform:scale(1.06)}
+  .gal-card span{position:relative;z-index:2;color:var(--cream);font-size:13px;letter-spacing:.3px}
+  .gal-card::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg, transparent 40%, rgba(0,0,0,.6));}
+  @media(max-width:800px){.gal{grid-template-columns:1fr 1fr}}
+
+  /* vinhos */
+  .vinhos-band{
+    position:relative;
+    background-image:linear-gradient(100deg, rgba(14,33,56,.97) 40%, rgba(14,33,56,.75)), url('../assets/adega-parede-vinhos.jpg');
+    background-size:cover;background-position:center;
+    border-top:1px solid rgba(201,162,77,.2);
+  }
+  .vinhos-inner{position:relative;z-index:1;display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center}
+  .vinhos-inner h2{font-size:34px;color:var(--cream);margin-bottom:14px}
+  .vinhos-inner > div > p{color:var(--muted);font-size:15px;margin-bottom:24px}
+  .vin-list{display:flex;flex-direction:column;gap:14px}
+  .vin-row{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:rgba(201,162,77,.06);border:1px solid rgba(201,162,77,.2);border-radius:10px}
+  .vin-row .nm{color:var(--cream);font-size:14.5px}
+  .vin-row .ct{color:var(--gold-light);font-size:12px;letter-spacing:.3px}
+  @media(max-width:800px){.vinhos-inner{grid-template-columns:1fr}}
+
+  /* localização — card único com tilt 3D, clicável, redireciona pro Google Maps real */
+  .map-card{perspective:1000px;max-width:680px;margin:0 auto}
+  .map-card-tilt{
+    position:relative;background:var(--navy-2);border:1px solid rgba(201,162,77,.35);border-radius:16px;padding:30px;
+    cursor:pointer;transition:transform .25s ease-out, box-shadow .25s ease;transform-style:preserve-3d;
+  }
+  .map-card-tilt:hover{box-shadow:0 16px 36px rgba(0,0,0,.35)}
+  .map-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .loc-tag{display:inline-block;background:rgba(201,162,77,.15);color:var(--gold-light);font-size:11px;font-weight:700;letter-spacing:.3px;padding:4px 12px;border-radius:999px}
+  .map-hint{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--gold-light);white-space:nowrap}
+  .map-hint .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .map-card-body{display:flex;gap:28px;align-items:center;margin-top:20px}
+  .map-visual{position:relative;flex:0 0 160px;height:160px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg, rgba(201,162,77,.2), rgba(201,162,77,.05))}
+  .map-lines{position:absolute;inset:0;width:100%;height:100%}
+  .map-lines line{stroke:var(--gold);stroke-opacity:.4;stroke-width:1}
+  .map-pin{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:30px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.4))}
+  .map-info{flex:1;min-width:0}
+  .map-info h3{font-size:19px;color:var(--gold-light);margin-bottom:10px}
+  .map-info address{font-style:normal;color:var(--cream);font-size:14px;line-height:1.65;margin-bottom:14px}
+  table.hours{width:100%;font-size:13px;color:var(--muted)}
+  table.hours td{padding:5px 0;border-bottom:1px dashed rgba(201,162,77,.15)}
+  table.hours td:last-child{text-align:right;color:var(--cream)}
+  .wa-inline{
+    display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12.5px;font-weight:600;
+    padding:9px 16px;border-radius:999px;background:rgba(201,162,77,.12);border:1px solid rgba(201,162,77,.3);color:var(--cream);
+    transition:background .15s ease, color .15s ease;
+  }
+  .wa-inline:hover{background:var(--gold);color:var(--navy)}
+  @media(max-width:560px){.map-card-body{flex-direction:column;align-items:stretch}.map-visual{flex-basis:auto;width:100%}}
+
+  footer{padding:56px 0 40px;border-top:1px solid rgba(201,162,77,.2)}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+  .foot-links{display:flex;gap:22px;font-size:13.5px;color:var(--muted)}
+  .foot-links a{display:inline-flex;align-items:center;gap:7px;transition:color .15s ease}
+  .foot-links a:hover{color:var(--gold-light)}
+  .credit{text-align:center;margin-top:30px;font-size:11.5px;color:rgba(185,196,209,.5);letter-spacing:.3px}
+
+  .back-to-top{
+    position:fixed;right:24px;bottom:24px;z-index:55;width:44px;height:44px;border-radius:50%;
+    background:var(--navy-2);border:1px solid rgba(201,162,77,.4);color:var(--gold-light);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.35);
+    opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .3s ease, transform .3s ease, border-color .2s ease;
+  }
+  .back-to-top.show{opacity:1;transform:translateY(0);pointer-events:auto}
+  .back-to-top:hover{border-color:var(--gold)}
+  @media(max-width:840px){.back-to-top{bottom:20px;right:16px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-name">Villa <em>Blué</em></span>
+    </div>
+    <div class="nav-links">
+      <a href="cardapio.html">Cardápio</a>
+      <a href="#reserva">Reservas</a>
+      <a href="#ambiente">Ambiente</a>
+      <a href="#vinhos">Carta de vinhos</a>
+      <a href="#localizacao">Localização</a>
+    </div>
+    <a class="btn-gold" href="#reserva">Reservar mesa</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-shimmer"></div>
+  <div class="wrap hero-inner">
+    <img class="hero-logo" src="../assets/icone-polvo-novo-crop.png" alt="">
+    <span class="hero-name">Villa Blué</span>
+    <span class="eyebrow"><span class="ln"></span>Cozinha Mediterrânea · Recreio dos Bandeirantes<span class="ln"></span></span>
+    <h1>Um <em>pedacinho da Grécia</em><br>no coração do Rio</h1>
+    <p class="sub">Frutos do mar, carnes e massas num ambiente que parece ter atravessado o Mediterrâneo. Aniversários, casamentos e encontros especiais.</p>
+    <div class="hero-cta">
+      <a class="btn-gold" href="#reserva">Reservar mesa</a>
+      <a class="btn-outline" href="cardapio.html">Ver cardápio</a>
+    </div>
+    <a class="scroll-cue" href="#diferenciais" aria-label="Descubra a experiência, rolar para a próxima seção">
+      Descubra a experiência
+      <span class="cue-line"></span>
+    </a>
+  </div>
+  <div class="wave-divider on-navy-2">
+    <svg viewBox="0 0 2400 60" preserveAspectRatio="none">
+      <path d="M0,30 Q75,10 150,30 T300,30 T450,30 T600,30 T750,30 T900,30 T1050,30 T1200,30 T1350,30 T1500,30 T1650,30 T1800,30 T1950,30 T2100,30 T2250,30 T2400,30 L2400,60 L0,60 Z"/>
+    </svg>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="strip-item"><span class="n">151 mil</span><span class="t">Seguidores no Instagram</span></div>
+    <div class="strip-item"><span class="n">150+</span><span class="t">Rótulos na adega</span></div>
+    <div class="strip-item"><span class="n">260</span><span class="t">Lugares no salão</span></div>
+    <div class="strip-item"><span class="n">1º lugar</span><span class="t">Lista Rio Turismo</span></div>
+  </div>
+</div>
+
+<section id="diferenciais">
+  <div class="bubbles">
+    <span style="left:6%;width:9px;height:9px;--drift:12px;animation-duration:10s;animation-delay:.2s"></span>
+    <span style="left:16%;width:6px;height:6px;--drift:-9px;animation-duration:8s;animation-delay:2s"></span>
+    <span style="left:29%;width:13px;height:13px;--drift:16px;animation-duration:12s;animation-delay:.8s"></span>
+    <span style="left:44%;width:7px;height:7px;--drift:-13px;animation-duration:9s;animation-delay:3.2s"></span>
+    <span style="left:58%;width:10px;height:10px;--drift:11px;animation-duration:11s;animation-delay:1.5s"></span>
+    <span style="left:71%;width:6px;height:6px;--drift:-8px;animation-duration:8.5s;animation-delay:4s"></span>
+    <span style="left:84%;width:12px;height:12px;--drift:15px;animation-duration:10.5s;animation-delay:2.6s"></span>
+    <span style="left:93%;width:5px;height:5px;--drift:-6px;animation-duration:7.5s;animation-delay:.5s"></span>
+  </div>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="ln"></span>Por que Villa Blué<span class="ln"></span></span>
+      <h2>Mais do que um restaurante</h2>
+    </div>
+    <div class="diff-grid reveal">
+      <div class="diff-card">
+        <img src="../assets/cafe-da-manha-buffet.jpg" alt="Mesa de café da manhã da Villa Blué com pães e salgados">
+        <div class="diff-content"><span class="num">01</span><h3>Café da manhã grego</h3><p>Mesa farta com pães quentinhos. Só sábado, domingo e feriado, das 8h às 11h.</p></div>
+      </div>
+      <div class="diff-card">
+        <img src="../assets/evento-aniversario.jpg" alt="Comemoração de aniversário na Villa Blué">
+        <div class="diff-content"><span class="num">02</span><h3>Feito pra comemorar</h3><p>Aniversários e casamentos com cenário pronto pra fotos inesquecíveis.</p></div>
+      </div>
+      <div class="diff-card">
+        <img src="../assets/vinhos-garrafas.jpg" alt="Garrafas de vinho selecionadas da adega Villa Blué">
+        <div class="diff-content"><span class="num">03</span><h3>Adega com curadoria</h3><p>Mais de 150 rótulos escolhidos para combinar com cada prato.</p></div>
+      </div>
+      <div class="diff-card">
+        <img src="../assets/lounge-externo-piscina.jpg" alt="Lounge externo pet friendly da Villa Blué">
+        <div class="diff-content"><span class="num">04</span><h3>Espaço externo à vontade</h3><p>Área aberta pra aproveitar com quem você ama, seu pet incluso.</p></div>
+      </div>
+      <div class="diff-card">
+        <img src="../assets/espaco-kids.jpg" alt="Espaço kids temático da Villa Blué">
+        <div class="diff-content"><span class="num">05</span><h3>Espaço kids</h3><p>Área temática pra crianças brincarem enquanto vocês relaxam.</p></div>
+      </div>
+      <div class="diff-card">
+        <img src="../assets/prato-polvo-camarao.jpg" alt="Prato de frutos do mar da Villa Blué pronto para delivery">
+        <div class="diff-content"><span class="num">06</span><h3>Sabor até a sua casa</h3><p>O mesmo cardápio da casa, direto no iFood.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cardapio">
+  <div class="bubbles">
+    <span style="left:10%;width:8px;height:8px;--drift:10px;animation-duration:9.5s;animation-delay:1s"></span>
+    <span style="left:22%;width:12px;height:12px;--drift:-14px;animation-duration:11.5s;animation-delay:3s"></span>
+    <span style="left:36%;width:6px;height:6px;--drift:9px;animation-duration:8s;animation-delay:.4s"></span>
+    <span style="left:63%;width:9px;height:9px;--drift:-11px;animation-duration:10s;animation-delay:2.2s"></span>
+    <span style="left:78%;width:13px;height:13px;--drift:13px;animation-duration:12s;animation-delay:1.6s"></span>
+    <span style="left:90%;width:7px;height:7px;--drift:-9px;animation-duration:9s;animation-delay:3.6s"></span>
+  </div>
+  <div class="wave-vertical left" aria-hidden="true">
+    <svg viewBox="0 0 60 800" preserveAspectRatio="none"><path d="M30,0 Q10,40 30,80 T30,160 T30,240 T30,320 T30,400 T30,480 T30,560 T30,640 T30,720 T30,800"/></svg>
+  </div>
+  <div class="wave-vertical right" aria-hidden="true">
+    <svg viewBox="0 0 60 800" preserveAspectRatio="none"><path d="M30,0 Q50,40 30,80 T30,160 T30,240 T30,320 T30,400 T30,480 T30,560 T30,640 T30,720 T30,800"/></svg>
+  </div>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="ln"></span>Cardápio<span class="ln"></span></span>
+      <h2>Sabores do Mediterrâneo</h2>
+      <p>Prévia ilustrativa do cardápio, para navegação direto no site em vez de baixar PDF avulso.</p>
+    </div>
+    <div class="menu-layout reveal">
+      <div class="menu-photos">
+        <span class="tag">Pratos em destaque</span>
+        <div class="menu-photo-card">
+          <img src="../assets/prato-com-logo.jpg" alt="Prato gratinado servido na Villa Blué, com o guardanapo estampado da casa">
+          <span class="cap">Gratinado da casa</span>
+        </div>
+        <div class="menu-photo-card">
+          <img src="../assets/prato-frutos-do-mar.jpg" alt="Prato de frutos do mar da Villa Blué">
+          <span class="cap">Camarões salteados</span>
+        </div>
+      </div>
+      <div>
+        <div class="menu-tabs">
+          <div class="menu-tab active" data-cat="entradas">Entradas</div>
+          <div class="menu-tab" data-cat="mar">Peixes &amp; frutos do mar</div>
+          <div class="menu-tab" data-cat="carnes">Carnes</div>
+          <div class="menu-tab" data-cat="sobremesas">Sobremesas</div>
+        </div>
+        <div class="menu-grid">
+          <div class="menu-cat active" data-cat="entradas">
+            <div class="menu-row"><div><div class="nm">Carpaccio de salmão</div><div class="ds">Alcaparras, flor de sal e limão siciliano</div></div><div class="pr">R$ 79,90</div></div>
+            <div class="menu-row"><div><div class="nm">Burrata</div><div class="ds">Molho pesto, rúcula e tomate seco</div></div><div class="pr">R$ 69,90</div></div>
+            <div class="menu-row"><div><div class="nm">Tábua de frios</div><div class="ds">Provolone, gorgonzola, azeitonas azapa e presunto parma</div></div><div class="pr">R$ 79,90</div></div>
+            <div class="menu-row"><div><div class="nm">Bolinho de bacalhau</div><div class="ds">5 unidades</div></div><div class="pr">R$ 49,90</div></div>
+          </div>
+          <div class="menu-cat" data-cat="mar">
+            <div class="menu-row"><div><div class="nm">Polvo inteiro à moda Blué</div><div class="ds">Para 2 pessoas, arroz negro, tomate cereja, batatas e brócolis</div></div><div class="pr">R$ 229,90</div></div>
+            <div class="menu-row"><div><div class="nm">Salmão ao arroz nero</div><div class="ds">Grelhado na manteiga, arroz negro e queijo parmesão</div></div><div class="pr">R$ 92,90</div></div>
+            <div class="menu-row"><div><div class="nm">Moqueca de peixe</div><div class="ds">Para 2 pessoas, temperos cariocas, arroz e farofa de dendê</div></div><div class="pr">R$ 189,90</div></div>
+          </div>
+          <div class="menu-cat" data-cat="carnes">
+            <div class="menu-row"><div><div class="nm">Picanha na chapa</div><div class="ds">Para 2 pessoas, arroz, fritas e molho à campanha</div></div><div class="pr">R$ 219,90</div></div>
+            <div class="menu-row"><div><div class="nm">Filé mignon com risoto de cogumelo</div><div class="ds">Molho rôti e queijo parmesão</div></div><div class="pr">R$ 95,90</div></div>
+            <div class="menu-row"><div><div class="nm">Ancho com fettuccine</div><div class="ds">Molho de ervas com fettuccine ao molho branco</div></div><div class="pr">R$ 81,90</div></div>
+            <div class="menu-row"><div><div class="nm">Baião de 2 cremoso com carne de sol na pedra</div><div class="ds">Para 2 pessoas</div></div><div class="pr">R$ 209,90</div></div>
+          </div>
+          <div class="menu-cat" data-cat="sobremesas">
+            <div class="menu-row"><div><div class="nm">Petit gateau</div></div><div class="pr">R$ 32,90</div></div>
+            <div class="menu-row"><div><div class="nm">Cheesecake de amora</div><div class="ds">Creme de queijo, biscoito e geleia de amora</div></div><div class="pr">R$ 29,90</div></div>
+            <div class="menu-row"><div><div class="nm">Torta de limão</div><div class="ds">Recheio de limão e cobertura de merengue gratinado</div></div><div class="pr">R$ 29,90</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="menu-note">Prévia do cardápio. O cardápio completo, com coquetelaria e carta de vinhos, está todo organizado num lugar só.</p>
+    <div style="text-align:center;margin-top:22px"><a class="btn-outline" href="cardapio.html">Ver cardápio completo →</a></div>
+  </div>
+</section>
+
+<section id="reserva" class="reserva">
+  <div class="wrap reserva-grid">
+    <div class="reserva-info reveal">
+      <span class="eyebrow"><span class="ln"></span>Reservas<span class="ln"></span></span>
+      <h2>Garanta sua mesa</h2>
+      <p>Preencha os dados e finalize direto no WhatsApp, sem sair do site.</p>
+      <ul>
+        <li>Confirmação rápida com a equipe</li>
+        <li>Ideal para aniversários e casamentos</li>
+        <li>Mesas para grupos grandes sob consulta</li>
+      </ul>
+    </div>
+    <form class="card reveal" id="form-reserva">
+      <div class="field-row">
+        <div class="field"><label>Data</label><input type="date" name="data" id="campo-data" required></div>
+        <div class="field"><label>Horário</label><input type="time" name="horario" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Pessoas</label><input type="number" name="pessoas" min="1" value="2" required></div>
+        <div class="field"><label>Nome</label><input type="text" name="nome" placeholder="Seu nome" required></div>
+      </div>
+      <div class="field"><label>Ocasião (opcional)</label><input type="text" name="ocasiao" placeholder="Aniversário, casamento, jantar a dois..."></div>
+      <button class="btn-gold" type="submit">Confirmar via WhatsApp →</button>
+    </form>
+  </div>
+</section>
+
+<div class="wave-divider on-navy" style="background:var(--navy-2)">
+  <svg viewBox="0 0 2400 60" preserveAspectRatio="none">
+    <path d="M0,30 Q75,10 150,30 T300,30 T450,30 T600,30 T750,30 T900,30 T1050,30 T1200,30 T1350,30 T1500,30 T1650,30 T1800,30 T1950,30 T2100,30 T2250,30 T2400,30 L2400,60 L0,60 Z"/>
+  </svg>
+</div>
+
+<section id="ambiente">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="ln"></span>Ambiente<span class="ln"></span></span>
+      <h2>Um clima que transporta</h2>
+      <p>Fotos reais da casa, direto do salão, adega e área kids.</p>
+    </div>
+    <div class="gal reveal">
+      <div class="gal-card"><img src="../assets/salao-grego-arcos.jpg" alt="Salão principal com arcos e decoração mediterrânea"><span>Salão principal</span></div>
+      <div class="gal-card"><img src="../assets/mural-polvo-fachada.jpg" alt="Mural do polvo pintado na fachada da Villa Blué"><span>Mural do polvo</span></div>
+      <div class="gal-card"><img src="../assets/salao-terraco.jpg" alt="Área externa coberta da Villa Blué"><span>Área externa</span></div>
+      <div class="gal-card"><img src="../assets/salao-movimentado.jpg" alt="Salão da Villa Blué cheio de clientes"><span>Sempre concorrido</span></div>
+      <div class="gal-card"><img src="../assets/drinks-defumados.jpg" alt="Drinks autorais da Villa Blué"><span>Drinks autorais</span></div>
+      <div class="gal-card"><img src="../assets/adega-parede-vinhos.jpg" alt="Adega com vinhos e parede com a logo Villa Blué"><span>Adega</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="vinhos" class="vinhos-band">
+  <div class="bubbles">
+    <span style="left:8%;width:10px;height:10px;--drift:14px;animation-duration:9s;animation-delay:0s"></span>
+    <span style="left:18%;width:6px;height:6px;--drift:-10px;animation-duration:7s;animation-delay:1.2s"></span>
+    <span style="left:32%;width:14px;height:14px;--drift:18px;animation-duration:11s;animation-delay:2.5s"></span>
+    <span style="left:47%;width:8px;height:8px;--drift:-16px;animation-duration:8s;animation-delay:.6s"></span>
+    <span style="left:61%;width:11px;height:11px;--drift:12px;animation-duration:10s;animation-delay:3.4s"></span>
+    <span style="left:74%;width:7px;height:7px;--drift:-8px;animation-duration:7.5s;animation-delay:1.8s"></span>
+    <span style="left:86%;width:13px;height:13px;--drift:16px;animation-duration:9.5s;animation-delay:4.2s"></span>
+    <span style="left:94%;width:5px;height:5px;--drift:-6px;animation-duration:6.5s;animation-delay:2s"></span>
+  </div>
+  <div class="wrap vinhos-inner reveal">
+    <div>
+      <span class="eyebrow"><span class="ln"></span>Carta de vinhos<span class="ln"></span></span>
+      <h2>Mais de 150 rótulos</h2>
+      <p>Uma adega pensada para acompanhar cada prato, com opções nacionais e importadas.</p>
+      <a class="btn-outline" href="https://wa.me/5521971258080?text=Oi!%20Quero%20ver%20a%20carta%20de%20vinhos%20completa" target="_blank" rel="noopener">Falar sobre a carta completa</a>
+    </div>
+    <div class="vin-list">
+      <div class="vin-row"><span class="nm">Tintos</span><span class="ct">Nacionais e importados</span></div>
+      <div class="vin-row"><span class="nm">Brancos</span><span class="ct">Ideais para frutos do mar</span></div>
+      <div class="vin-row"><span class="nm">Espumantes</span><span class="ct">Para brindar ocasiões especiais</span></div>
+      <div class="vin-row"><span class="nm">Rosés</span><span class="ct">Leves, para o clima do Recreio</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="localizacao">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="ln"></span>Localização<span class="ln"></span></span>
+      <h2>Onde estamos</h2>
+    </div>
+    <div class="map-card reveal" id="map-card" data-maps-url="https://maps.app.goo.gl/2LvR9KgH3Te56844A">
+      <div class="map-card-tilt">
+        <div class="map-card-head">
+          <span class="loc-tag">Casa principal</span>
+          <span class="map-hint"><span class="dot"></span>Toque para abrir no Google Maps ↗</span>
+        </div>
+        <div class="map-card-body">
+          <div class="map-visual">
+            <svg class="map-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <line x1="0" y1="38" x2="100" y2="38"></line>
+              <line x1="0" y1="68" x2="100" y2="68"></line>
+              <line x1="28" y1="0" x2="28" y2="100"></line>
+              <line x1="72" y1="0" x2="72" y2="100"></line>
+            </svg>
+            <span class="map-pin">📍</span>
+          </div>
+          <div class="map-info">
+            <h3>Villa Blué — Recreio</h3>
+            <address>Rua Alberto Bianchi, 245<br>Recreio dos Bandeirantes, Rio de Janeiro, RJ<br>22795-390</address>
+            <table class="hours">
+              <tr><td>Segunda a sexta</td><td>11h às 00h</td></tr>
+              <tr><td>Sábado</td><td>12h às 01h</td></tr>
+              <tr><td>Domingo</td><td>12h às 23h</td></tr>
+              <tr><td>Café da manhã (sáb, dom e feriados)</td><td>8h às 11h</td></tr>
+            </table>
+            <a class="wa-inline" href="https://wa.me/5521971258080" target="_blank" rel="noopener" onclick="event.stopPropagation()">💬 (21) 97125-8080</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div class="brand">
+      <span class="brand-name">Villa <em>Blué</em></span>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.instagram.com/villa.bluee/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor" stroke="none"/></svg> Instagram</a>
+      <a href="https://wa.me/5521971258080" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.42-1.36c1.37.71 2.93 1.12 4.62 1.12h.01c5.46 0 9.9-4.45 9.9-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.06h-.01c-1.51 0-2.99-.41-4.28-1.17l-.31-.18-3.19.8.85-3.1-.2-.32a8.09 8.09 0 0 1-1.24-4.28c0-4.47 3.64-8.11 8.12-8.11 2.17 0 4.2.84 5.74 2.38a8.06 8.06 0 0 1 2.38 5.75c0 4.47-3.64 8.13-8.06 8.13Zm4.4-6.07c-.24-.12-1.43-.71-1.65-.79-.22-.08-.38-.12-.55.12-.16.24-.62.79-.77.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.13 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.43-.58 1.63-1.15.2-.56.2-1.04.14-1.15-.06-.1-.22-.16-.46-.28Z"/></svg> WhatsApp</a>
+      <a href="https://www.facebook.com/villa.bluee1" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.9.25-1.5 1.53-1.5H16.5V4.3c-.26-.04-1.16-.11-2.2-.11-2.18 0-3.67 1.33-3.67 3.77V10.5h-2.5v3h2.5V21h2.87Z"/></svg> Facebook</a>
+    </div>
+  </div>
+  <div class="credit">Protótipo de demonstração desenvolvido por Kintech Studio</div>
+</footer>
+
+<button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
+<script>
+  if (typeof Lenis !== 'undefined') {
+    const lenis = new Lenis({ duration: 1.15, smoothWheel: true, touchMultiplier: 1.3 });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+  }
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  document.getElementById('campo-data').min = new Date().toISOString().split('T')[0];
+
+  document.querySelectorAll('.menu-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.menu-cat').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector('.menu-cat[data-cat="' + tab.dataset.cat + '"]').classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.map-card').forEach(card => {
+    const tilt = card.querySelector('.map-card-tilt');
+    if (!tilt) return;
+    card.addEventListener('mousemove', (e) => {
+      const rect = tilt.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      tilt.style.transform = `rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg)`;
+    });
+    card.addEventListener('mouseleave', () => { tilt.style.transform = ''; });
+    tilt.addEventListener('click', () => {
+      window.open(card.dataset.mapsUrl, '_blank', 'noopener');
+    });
+  });
+
+  document.getElementById('form-reserva').addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!this.checkValidity()) { this.reportValidity(); return; }
+    const f = new FormData(this);
+    const nome = f.get('nome').trim(), horario = f.get('horario'), pessoas = f.get('pessoas'), ocasiao = f.get('ocasiao').trim();
+    const [ano, mes, dia] = f.get('data').split('-');
+    const dataBr = `${dia}/${mes}/${ano}`;
+
+    let msg = `*Reserva de mesa — Villa Blué*\n\n`;
+    msg += `Nome: ${nome}\n`;
+    msg += `Data: ${dataBr}\n`;
+    msg += `Horário: ${horario}\n`;
+    msg += `Pessoas: ${pessoas}`;
+    if (ocasiao) msg += `\nOcasião: ${ocasiao}`;
+    msg += `\n\nPor favor, confirmar disponibilidade. Obrigado!`;
+
+    window.open('https://wa.me/5521971258080?text=' + encodeURIComponent(msg), '_blank');
+  });
+
+  // ---- convite pra rolar: some suavemente ao sair do hero ----
+  const scrollCue = document.querySelector('.scroll-cue');
+  const heroEl = document.querySelector('.hero');
+  if (scrollCue && heroEl) {
+    const cueObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { scrollCue.style.opacity = entry.isIntersecting ? '' : '0'; });
+    }, { threshold: 0.6 });
+    cueObserver.observe(heroEl);
+  }
+
+  // ---- voltar ao topo ----
+  const backBtn = document.getElementById('back-to-top');
+  if (backBtn && heroEl) {
+    const backObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => backBtn.classList.toggle('show', !entry.isIntersecting));
+    }, { rootMargin: '-200px 0px 0px 0px' });
+    backObserver.observe(heroEl);
+    backBtn.addEventListener('click', () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+</script>
+
+</body>
+</html>

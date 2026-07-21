@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardápio completo — Villa Blué</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lenis/dist/lenis.min.js"></script>
+<style>
+  :root{
+    --navy:#0e2138; --navy-2:#132a45; --navy-3:#1c3a5e;
+    --gold:#c9a24d; --gold-light:#e6cd8d; --cream:#f6f1e6; --muted:#b9c4d1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--navy);color:var(--cream);font-family:'Poppins',sans-serif;
+    font-weight:300;line-height:1.6;
+    -webkit-user-select:none;user-select:none;
+  }
+  h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.3px}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  nav{position:sticky;top:0;z-index:60;background:rgba(14,33,56,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(201,162,77,.25)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .brand-name{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--cream)}
+  .brand-name em{font-style:italic;color:var(--gold-light)}
+  .back-link{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .back-link:hover{color:var(--gold-light)}
+  .btn-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--navy);font-weight:600;font-size:13px;padding:10px 20px;border-radius:30px}
+
+  .top{padding:64px 0 40px;text-align:center;background:radial-gradient(ellipse at 50% 0%, rgba(201,162,77,.14), transparent 60%)}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--gold-light);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+  .eyebrow .ln{width:22px;height:1px;background:var(--gold)}
+  .top h1{font-size:42px;color:var(--cream)}
+  .top p{color:var(--muted);font-size:14px;margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto}
+
+  /* barra compacta mobile/tablet: gatilho de categorias + busca */
+  .mob-bar{position:sticky;top:72px;z-index:50;display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--navy);border-bottom:1px solid rgba(201,162,77,.18);padding:12px 24px}
+  .mob-bar-btn{display:flex;align-items:center;gap:8px;background:var(--navy-2);border:1px solid rgba(201,162,77,.3);color:var(--cream);font-size:13px;padding:9px 14px;border-radius:30px}
+  .mob-bar-btn svg{flex:0 0 auto}
+  .mob-bar-active{font-size:11.5px;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mob-search-btn{background:var(--navy-2);border:1px solid rgba(201,162,77,.3);color:var(--cream);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 38px}
+
+  /* layout principal: conteúdo + painel de categorias */
+  .menu-shell{display:grid;grid-template-columns:1fr 280px;gap:48px;align-items:start;padding-top:44px}
+  .menu-main{min-width:0}
+  .menu-panel{
+    position:sticky;top:96px;background:var(--navy-2);border:1px solid rgba(201,162,77,.22);
+    border-radius:16px;padding:22px;max-height:calc(100vh - 120px);overflow-y:auto;
+  }
+  .menu-panel h3{font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-light);margin-bottom:16px}
+  .cat-search{position:relative;margin-bottom:18px}
+  .cat-search input{
+    width:100%;background:var(--navy);border:1px solid rgba(201,162,77,.3);border-radius:10px;
+    padding:10px 34px 10px 12px;color:var(--cream);font-family:inherit;font-size:13px;
+  }
+  .cat-search input::placeholder{color:var(--muted)}
+  .cat-search input:focus{outline:none;border-color:var(--gold)}
+  .cat-search svg{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+  .cat-search .clear-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--gold-light);font-size:16px;line-height:1;display:none;background:none;border:none;cursor:pointer;padding:4px}
+  .cat-search.has-value .clear-btn{display:block}
+  .cat-search.has-value svg{display:none}
+  .search-summary{font-size:11.5px;color:var(--muted);margin:-8px 0 14px;min-height:14px}
+
+  .cat-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+  .cat-list a{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    padding:9px 10px;border-radius:8px;font-size:13px;color:var(--muted);
+    border-left:2px solid transparent;transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .cat-list a:hover{background:rgba(201,162,77,.08);color:var(--cream)}
+  .cat-list a.active{background:rgba(201,162,77,.14);color:var(--gold-light);border-left-color:var(--gold)}
+  .cat-list .cnt{font-size:11px;color:var(--muted);opacity:.8}
+  .cat-list a.active .cnt{color:var(--gold-light);opacity:1}
+  .cat-list a.zero{opacity:.4;pointer-events:none}
+
+  .drawer-overlay{position:fixed;inset:0;background:rgba(8,16,28,.7);z-index:90;display:none}
+  .drawer-overlay.open{display:block}
+  .cat-drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(88vw,340px);z-index:95;
+    background:var(--navy-2);border-left:1px solid rgba(201,162,77,.3);
+    transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;padding:22px;
+  }
+  .cat-drawer.open{transform:translateX(0)}
+  .drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .drawer-head h3{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold-light)}
+  .drawer-close{background:none;border:1px solid rgba(201,162,77,.3);color:var(--cream);width:32px;height:32px;border-radius:50%;font-size:16px}
+
+  @media(max-width:980px){
+    .menu-shell{display:block;padding-top:24px}
+    .menu-panel{display:none}
+    .mob-bar{display:flex}
+  }
+
+  section.cat{padding:56px 0;border-bottom:1px solid rgba(201,162,77,.12);scroll-margin-top:90px}
+  .empty-state{display:none;text-align:center;padding:30px 0;color:var(--muted);font-size:13px}
+  .empty-state button{margin-top:10px;background:none;border:1px solid rgba(201,162,77,.3);color:var(--gold-light);padding:8px 16px;border-radius:30px;font-size:12.5px}
+  .cat-head{margin-bottom:30px}
+  .cat-head h2{font-size:30px;color:var(--gold-light)}
+  .cat-head .note{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+  .menu-list{display:flex;flex-direction:column}
+  .menu-line{display:flex;justify-content:space-between;gap:18px;padding:16px 0;border-bottom:1px dashed rgba(201,162,77,.18)}
+  .menu-line .info{max-width:76%}
+  .menu-line .nm{color:var(--cream);font-size:15.5px;font-weight:400}
+  .menu-line .ds{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .menu-line .pr{color:var(--gold-light);font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;white-space:nowrap}
+
+  .feat-photo{border-radius:14px;overflow:hidden;border:1px solid rgba(201,162,77,.25);margin-bottom:30px}
+  .feat-photo img{width:100%;max-height:360px;object-fit:cover}
+
+  .strip-photo{border-radius:14px;overflow:hidden;border:1px solid rgba(201,162,77,.25);margin-bottom:26px}
+  .strip-photo img{width:100%;display:block}
+
+  .two-col{columns:2;column-gap:40px}
+  .two-col .menu-line{break-inside:avoid}
+  @media(max-width:700px){.two-col{columns:1}}
+
+  /* carta de vinhos — seção própria, sem imagem de PDF escaneado */
+  .wine-country{
+    font-size:13px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-light);
+    margin:32px 0 6px;padding-top:22px;border-top:1px solid rgba(201,162,77,.15);
+    display:flex;align-items:center;gap:12px;
+  }
+  .wine-country::after{content:"";flex:1;height:1px;background:rgba(201,162,77,.15)}
+  .wine-country:first-child{border-top:none;padding-top:0;margin-top:0}
+
+  .wine-line{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 0;border-bottom:1px dashed rgba(201,162,77,.14)}
+  .wine-line .nm{color:var(--cream);font-size:14.5px}
+  .wine-line .ds{color:var(--muted);font-size:11.5px;margin-top:2px}
+  .wine-line .pr{color:var(--gold-light);font-family:'Cormorant Garamond',serif;font-size:15.5px;font-weight:600;white-space:nowrap}
+
+  .sommelier-head{text-align:center;max-width:520px;margin:0 auto 34px}
+  .sommelier-head h3{font-size:24px;color:var(--cream)}
+  .sommelier-head p{font-size:13px;color:var(--muted);margin-top:8px}
+
+  .sommelier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:56px}
+  .som-card{
+    background:linear-gradient(160deg, var(--navy-2), var(--navy-3));
+    border:1px solid rgba(201,162,77,.3);border-radius:16px;padding:24px;
+    display:flex;gap:18px;align-items:flex-start;
+  }
+  .som-photo{position:relative;flex:0 0 76px}
+  .som-photo img{width:76px;height:150px;object-fit:cover;border-radius:8px;border:1px solid rgba(201,162,77,.3);background:var(--navy);display:block}
+  .score-ring{position:absolute;top:-9px;left:-9px;width:42px;height:42px}
+  .score-ring svg{transform:rotate(-90deg)}
+  .score-ring circle{fill:none;stroke-width:4}
+  .score-ring .ring-bg{stroke:rgba(14,33,56,.55)}
+  .score-ring .ring-fg{stroke:var(--gold-light);stroke-linecap:round;stroke-dasharray:106.8;stroke-dashoffset:106.8;transition:stroke-dashoffset 1.6s cubic-bezier(.16,.8,.24,1);filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+  .score-ring.in-view .ring-fg{stroke-dashoffset:var(--target)}
+  .score-ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--gold-light);text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  .casa-badge{position:absolute;top:-9px;left:-9px;background:var(--navy);border:1px solid var(--gold);color:var(--gold-light);font-size:9px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap}
+  .som-info h4{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--cream);font-weight:600}
+  .som-info .grape{font-size:11.5px;color:var(--gold-light);margin:2px 0 8px}
+  .som-info .note{font-size:12px;color:var(--muted);line-height:1.55}
+  .som-info .price{display:block;margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-light);font-weight:600}
+
+  footer{padding:44px 0;text-align:center;border-top:1px solid rgba(201,162,77,.2)}
+  .credit{font-size:11.5px;color:rgba(185,196,209,.5);margin-top:8px}
+  .foot-cta{display:inline-flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+  .btn-outline{border:1px solid rgba(246,241,230,.4);color:var(--cream);padding:10px 20px;border-radius:30px;font-size:13px}
+
+  .back-to-top{
+    position:fixed;right:24px;bottom:24px;z-index:55;width:44px;height:44px;border-radius:50%;
+    background:var(--navy-2);border:1px solid rgba(201,162,77,.4);color:var(--gold-light);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.35);
+    opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .3s ease, transform .3s ease, border-color .2s ease;
+  }
+  .back-to-top.show{opacity:1;transform:translateY(0);pointer-events:auto}
+  .back-to-top:hover{border-color:var(--gold)}
+  mark{background:rgba(201,162,77,.35);color:inherit;border-radius:2px;padding:0 1px}
+  @media(max-width:980px){.back-to-top{bottom:20px;right:16px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand-name">Villa <em>Blué</em></span>
+    <a class="back-link" href="index.html">&larr; Voltar ao site</a>
+    <a class="btn-gold" href="https://wa.me/5521971258080?text=Oi!%20Quero%20reservar%20uma%20mesa%20na%20Villa%20Blu%C3%A9" target="_blank" rel="noopener">Reservar mesa</a>
+  </div>
+</nav>
+
+<div class="top">
+  <div class="wrap">
+    <span class="eyebrow"><span class="ln"></span>Cardápio completo<span class="ln"></span></span>
+    <h1>Tudo o que a casa serve, num lugar só</h1>
+    <p>Sem baixar PDF, sem trocar de link. Cardápio, coquetelaria e carta de vinhos, direto no site.</p>
+  </div>
+</div>
+
+<div class="mob-bar">
+  <button class="mob-bar-btn" id="drawer-open" aria-haspopup="true" aria-controls="cat-drawer" aria-expanded="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    Categorias
+  </button>
+  <span class="mob-bar-active" id="mob-bar-active"></span>
+  <button class="mob-search-btn" id="mob-search-open" aria-label="Buscar no cardápio">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<div class="cat-drawer" id="cat-drawer" role="dialog" aria-modal="true" aria-label="Categorias do cardápio">
+  <div class="drawer-head">
+    <h3>Categorias</h3>
+    <button class="drawer-close" id="drawer-close" aria-label="Fechar categorias">&times;</button>
+  </div>
+  <div class="cat-search">
+    <input type="text" id="search-input-drawer" placeholder="Buscar prato, bebida, ingrediente..." aria-label="Buscar no cardápio">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <button class="clear-btn" aria-label="Limpar busca">&times;</button>
+  </div>
+  <div class="search-summary" id="search-summary-drawer" aria-live="polite"></div>
+  <ul class="cat-list" id="cat-list-drawer"></ul>
+</div>
+
+<div class="wrap menu-shell">
+  <div class="menu-main">
+
+<div class="empty-state" id="empty-state">
+  Nenhum item encontrado para esta busca.
+  <div><button id="empty-clear-btn">Limpar busca</button></div>
+</div>
+
+<section class="cat" id="executivo">
+  <div class="wrap">
+    <div class="cat-head"><h2>Cardápio Executivo</h2><div class="note">Segunda a sexta, das 11h às 15h30, exceto feriados. Escolha o prato e até 3 acompanhamentos.</div></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Contra filé a cavalo</div><div class="ds">Bife de contra filé com ovo frito</div></div><div class="pr">R$ 43,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Frango grelhado</div></div><div class="pr">R$ 33,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filé de coxa sem osso</div></div><div class="pr">R$ 36,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Parmegiana de frango</div><div class="ds">Ao molho de tomate e queijo</div></div><div class="pr">R$ 42,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Parmegiana de carne</div><div class="ds">Ao molho de tomate e queijo</div></div><div class="pr">R$ 44,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Picadinho à Villa Blué</div><div class="ds">Ao molho rôti e ovo poché</div></div><div class="pr">R$ 37,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filé de tilápia empanada</div><div class="ds">Ao molho de camarão</div></div><div class="pr">R$ 45,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Contra filé ao molho madeira</div><div class="ds">Arroz à piamontese e fritas</div></div><div class="pr">R$ 45,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Linguine ao molho de camarão</div></div><div class="pr">R$ 45,90</div></div>
+    </div>
+    <div class="cat-head" style="margin-top:30px;margin-bottom:0"><div class="note">Acompanhamentos: arroz branco, arroz cremoso, arroz de brócolis, legumes, purê de batata, farofa de ovo, fritas ou salada Caesar.</div></div>
+  </div>
+</section>
+
+<section class="cat" id="entradas">
+  <div class="wrap">
+    <div class="cat-head"><h2>Entradas</h2></div>
+    <div class="feat-photo"><img src="../assets/prato-com-logo.jpg" alt="Entrada gratinada servida na Villa Blué"></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Carpaccio de carne</div><div class="ds">Ao molho de alcaparras e queijo parmesão</div></div><div class="pr">R$ 69,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Carpaccio de salmão</div><div class="ds">Ao molho alcaparras, flor de sal e limão siciliano</div></div><div class="pr">R$ 79,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Burrata</div><div class="ds">Ao molho pesto, rúcula e tomate seco</div></div><div class="pr">R$ 69,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Picanha com fritas</div><div class="ds">Tiras de picanha com fritas</div></div><div class="pr">R$ 129,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Ceviche no coco</div></div><div class="pr">R$ 69,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Tábua de frios</div><div class="ds">Provolone, gorgonzola, azeitonas azapa e presunto parma</div></div><div class="pr">R$ 79,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Salada de frutos do mar</div><div class="ds">Mix de folhas, frutos do mar ao azeite de limão siciliano</div></div><div class="pr">R$ 69,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Salada Caesar</div></div><div class="pr">R$ 35,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Salada tropical</div><div class="ds">Mix de folhas, abacaxi, manga, gorgonzola e molho de mostarda e mel</div></div><div class="pr">R$ 43,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Croquete de carne</div></div><div class="pr">R$ 49,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Casquinha de siri</div></div><div class="pr">R$ 27,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Pastel de camarão</div><div class="ds">4 unidades</div></div><div class="pr">R$ 49,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Pastel de carne seca com catupiry</div><div class="ds">4 unidades</div></div><div class="pr">R$ 44,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Pastel de queijo</div><div class="ds">4 unidades</div></div><div class="pr">R$ 41,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Pastel de siri</div><div class="ds">4 unidades</div></div><div class="pr">R$ 41,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Bolinho de bacalhau</div><div class="ds">5 unidades</div></div><div class="pr">R$ 49,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gurjão de peixe</div><div class="ds">300g</div></div><div class="pr">R$ 49,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gurjão de frango</div><div class="ds">300g</div></div><div class="pr">R$ 41,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Taça de camarão</div></div><div class="pr">R$ 71,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Steak tartare mignon</div><div class="ds">Com torradas</div></div><div class="pr">R$ 89,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Steak tartare salmão</div><div class="ds">Com torradas</div></div><div class="pr">R$ 89,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filé aperitivo ao molho de gorgonzola</div><div class="ds">Cortes aperitivos de mignon ao molho de gorgonzola e torradas</div></div><div class="pr">R$ 104,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Batata frita</div><div class="ds">300g</div></div><div class="pr">R$ 29,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Batata frita com cheddar e bacon</div></div><div class="pr">R$ 45,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Porção de arroz, torradas</div></div><div class="pr">R$ 15,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Arroz cremoso</div></div><div class="pr">R$ 24,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="carnes">
+  <div class="wrap">
+    <div class="cat-head"><h2>Carnes</h2></div>
+    <div class="feat-photo"><img src="../assets/picanha-fritas.jpg" alt="Corte de carne servido com fritas na Villa Blué"></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Filé mignon com batata gratinada</div><div class="ds">Ao molho de gorgonzola e batata gratinada</div></div><div class="pr">R$ 92,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Ancho com fettuccine</div><div class="ds">Ao molho de ervas com fettuccine ao molho branco</div></div><div class="pr">R$ 81,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Medalhão de mignon com risoto de abobrinha</div><div class="ds">Ao molho rôti, queijo parmesão, acompanha risoto de abobrinha</div></div><div class="pr">R$ 92,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Paillard de mignon com linguine</div><div class="ds">Ao molho de tomate e linguine</div></div><div class="pr">R$ 79,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filé mignon com risoto de cogumelo</div><div class="ds">Ao molho rôti, queijo parmesão, acompanha risoto de cogumelo</div></div><div class="pr">R$ 95,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Milanesa de mignon com risoto de limão siciliano</div><div class="ds">Filé mignon à milanesa com queijo parmesão</div></div><div class="pr">R$ 82,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Picanha na chapa</div><div class="ds">Para 2 pessoas, arroz, fritas e molho à campanha</div></div><div class="pr">R$ 219,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Baião de 2 cremoso com carne de sol na pedra</div><div class="ds">Para 2 pessoas, aipim frito ou cozido e onion rings</div></div><div class="pr">R$ 209,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="massas">
+  <div class="wrap">
+    <div class="cat-head"><h2>Massas</h2></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Linguine de camarão ao champagne</div><div class="ds">Linguine de camarão rosa ao champagne</div></div><div class="pr">R$ 71,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Linguine de frutos do mar</div><div class="ds">Ao molho de tomate e mix de frutos do mar</div></div><div class="pr">R$ 73,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Linguine de camarão ao funghi</div><div class="ds">Camarão rosa, queijo parmesão e funghi seco desidratado</div></div><div class="pr">R$ 71,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espaguete à bolonhesa</div></div><div class="pr">R$ 45,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Nhoque de camarão</div><div class="ds">Ao molho de tomate e camarões rosa</div></div><div class="pr">R$ 54,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Ravioli de mussarela de búfala</div><div class="ds">Ao molho de tomate e queijo parmesão</div></div><div class="pr">R$ 49,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Fettuccine à carbonara</div><div class="ds">Caldo de legumes, bacon, queijo parmesão e gema de ovo</div></div><div class="pr">R$ 49,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="peixes">
+  <div class="wrap">
+    <div class="cat-head"><h2>Peixes &amp; Frutos do Mar</h2></div>
+    <div class="feat-photo"><img src="../assets/prato-polvo-camarao.jpg" alt="Prato de frutos do mar com polvo grelhado da Villa Blué"></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Bacalhau da Villa</div><div class="ds">Filé de bacalhau com brócolis, cebola caramelizada e batatas calabresas</div></div><div class="pr">R$ 139,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Salmão com risoto de palmito</div><div class="ds">Salmão grelhado na manteiga com queijo parmesão e risoto de palmito</div></div><div class="pr">R$ 92,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Salmão ao arroz nero</div><div class="ds">Salmão grelhado ao arroz negro na manteiga e queijo parmesão</div></div><div class="pr">R$ 92,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filé de linguado com purê ao molho belle meunière</div><div class="ds">Acompanhado de purê de batata</div></div><div class="pr">R$ 79,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Polvo inteiro à moda Blué</div><div class="ds">Para 2 pessoas. Acompanha arroz negro, tomate cereja, batatas e brócolis</div></div><div class="pr">R$ 229,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Caldeirada de frutos do mar</div><div class="ds">Para 2 pessoas. Tempero brasileiro com farofa de dendê, pirão e arroz branco</div></div><div class="pr">R$ 219,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Bobó de camarão</div><div class="ds">Para 2 pessoas. Camarão rosa, pimentões coloridos, purê de mandioquinha, arroz e farofa</div></div><div class="pr">R$ 179,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Moqueca de peixe</div><div class="ds">Para 2 pessoas. Temperos cariocas, arroz e farofa de dendê e pirão</div></div><div class="pr">R$ 189,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Moqueca mista</div><div class="ds">Para 2 pessoas. Camarão e peixe, temperos cariocas, arroz e farofa de dendê e pirão</div></div><div class="pr">R$ 209,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Paella de frutos do mar</div><div class="ds">Para 2 pessoas. Camarão, mexilhão, polvo e lula no arroz de açafrão</div></div><div class="pr">R$ 229,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Chapa de frutos do mar</div><div class="ds">Para 2 pessoas. Lula, peixe, polvo, camarão e arroz</div></div><div class="pr">R$ 229,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="risotos">
+  <div class="wrap">
+    <div class="cat-head"><h2>Risotos</h2></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Risoto de camarão</div><div class="ds">Camarão rosa na manteiga, queijo parmesão</div></div><div class="pr">R$ 75,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Risoto de frutos do mar</div><div class="ds">Na manteiga e queijo parmesão</div></div><div class="pr">R$ 83,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Risoto de camarão com abobrinha</div><div class="ds">Camarão rosa na manteiga, abobrinha e queijo parmesão</div></div><div class="pr">R$ 74,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Risoto de mignon</div><div class="ds">Filé mignon na manteiga, queijo parmesão e molho rôti</div></div><div class="pr">R$ 72,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Arroz de polvo</div><div class="ds">Com brócolis e tomate cereja</div></div><div class="pr">R$ 72,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Risoto à primavera</div><div class="ds">Vegetariano. Brócolis, abobrinha e cenoura na manteiga e queijo parmesão</div></div><div class="pr">R$ 49,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="kids">
+  <div class="wrap">
+    <div class="cat-head"><h2>Villa Kids</h2><div class="note">Limitado a crianças abaixo de 12 anos</div></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Espaguete ao molho sugo</div><div class="ds">Massa de espaguete ao molho de tomates</div></div><div class="pr">R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espaguete ao alho e óleo</div></div><div class="pr">R$ 31,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filezinho de frango grelhado</div><div class="ds">Com arroz, feijão e fritas</div></div><div class="pr">R$ 34,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Filezinho de linguado grelhado</div><div class="ds">Com arroz branco e purê de batata</div></div><div class="pr">R$ 39,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Mignon kids</div><div class="ds">Com arroz, feijão e fritas</div></div><div class="pr">R$ 39,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="sobremesas">
+  <div class="wrap">
+    <div class="cat-head"><h2>Sobremesas</h2></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Brownie com sorvete</div></div><div class="pr">R$ 28,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Petit gateau</div></div><div class="pr">R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Pudim</div></div><div class="pr">R$ 15,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Cheesecake de amora</div><div class="ds">Creme de queijo, biscoito e geleia de amora</div></div><div class="pr">R$ 29,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Cheesecake de morango</div><div class="ds">Creme de queijo, biscoito e geleia de morango</div></div><div class="pr">R$ 29,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Pavê de choco chips</div><div class="ds">Creme de baunilha, biscoito, brigadeiro e chocolate em gotas</div></div><div class="pr">R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Torta de limão</div><div class="ds">Recheio de limão e cobertura de merengue gratinado</div></div><div class="pr">R$ 29,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="coquetelaria">
+  <div class="wrap">
+    <div class="cat-head"><h2>Coquetelaria</h2><div class="note">Drinks autorais e clássicos da casa. Preço varia conforme a base (Gordons, Tanqueray, Smirnoff, Ketel One).</div></div>
+    <div class="strip-photo"><img src="../assets/cardapio-coquetelaria-exclusiva-1.jpg" alt="Coquetelaria exclusiva Villa Blué: Pink Fresh Summer, Scarlate, Dragon Frash, Pitaya Purple, Bumble, Coffee Cream"></div>
+    <div class="strip-photo"><img src="../assets/cardapio-coquetelaria-exclusiva-2.jpg" alt="Coquetelaria exclusiva Villa Blué: Violet, El Caliente, Villa Blué, Whisky Caramel, Tropical Sour, Cheguei, Bossa da Villa"></div>
+    <div class="strip-photo"><img src="../assets/cardapio-coquetelaria-classica-1.jpg" alt="Coquetelaria clássica Villa Blué: Mojito, Paloma, Cosmopolitan, Negroni, Margarita, Moscow Mule"></div>
+    <div class="strip-photo"><img src="../assets/cardapio-coquetelaria-classica-2.jpg" alt="Coquetelaria clássica Villa Blué: Gin Tônica, Piña Colada, Aperol Spritz, Garibaldi, Caipirinha, Blond Citrus"></div>
+    <div class="strip-photo"><img src="../assets/cardapio-caip-blue-villa-spritz.jpg" alt="Caip Blué e Villa Spritz"></div>
+    <div class="strip-photo"><img src="../assets/cardapio-cleriquot-redbull.jpg" alt="Cleriquot da casa e drinks com Red Bull"></div>
+  </div>
+</section>
+
+<section class="cat" id="bebidas">
+  <div class="wrap">
+    <div class="cat-head"><h2>Cervejas, Refrigerantes &amp; Sucos</h2></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Heineken long neck 330ml</div></div><div class="pr">R$ 15,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Heineken zero long neck 330ml</div></div><div class="pr">R$ 15,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Heineken 600ml</div></div><div class="pr">R$ 21,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Stella Artois long neck 330ml</div></div><div class="pr">R$ 14,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Budweiser long neck 330ml</div></div><div class="pr">R$ 14,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Corona long neck 330ml</div></div><div class="pr">R$ 15,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Chopp Brahma caneca</div></div><div class="pr">R$ 14,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Água com/sem gás</div></div><div class="pr">R$ 9,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Coca-Cola / Coca Zero lata</div></div><div class="pr">R$ 9,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Guaraná / Fanta / Sprite lata</div></div><div class="pr">R$ 9,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Del Vale uva / pêssego</div></div><div class="pr">R$ 10,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">H2O limão / limonade</div></div><div class="pr">R$ 10,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Red Bull tradicional / melancia / tropical</div></div><div class="pr">R$ 17,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Mate Leão tradicional / limão / zero</div></div><div class="pr">R$ 9,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Ice Tea limão / pêssego</div></div><div class="pr">R$ 9,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Chá Blué</div><div class="ds">Limão, pêssego e framboesa</div></div><div class="pr">R$ 16,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Suco 2 frutas — copo 300ml</div><div class="ds">Laranja, maracujá, abacaxi, abacaxi com hortelã ou limonada</div></div><div class="pr">R$ 16,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Suco 2 frutas — jarra 750ml</div></div><div class="pr">R$ 35,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Soda Blué</div><div class="ds">Maçã verde, tangerina, framboesa, cranberry, maracujá ou morango</div></div><div class="pr">R$ 16,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="destilados">
+  <div class="wrap">
+    <div class="cat-head"><h2>Destilados</h2><div class="note">Preço de garrafa e de dose, quando disponível</div></div>
+    <div class="menu-list two-col">
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Ballantines</div></div><div class="pr">R$ 180 / R$ 20,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Jameson</div></div><div class="pr">R$ 220 / R$ 24,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Chivas</div></div><div class="pr">R$ 270,90 / R$ 29,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Red Label</div></div><div class="pr">R$ 229,90 / R$ 24,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Black Label</div></div><div class="pr">R$ 449,90 / R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Gold Label</div></div><div class="pr">R$ 649,90 / R$ 40,00</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Blue Label</div></div><div class="pr">R$ 1.990,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Buchanans</div></div><div class="pr">R$ 359,90 / R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Jack Daniels</div></div><div class="pr">R$ 319,90 / R$ 29,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Jack Honey</div></div><div class="pr">R$ 329,90 / R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Jack Fire</div></div><div class="pr">R$ 329,90 / R$ 32,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Whisky Old Parr</div></div><div class="pr">R$ 229,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Vodka Smirnoff</div></div><div class="pr">R$ 89,90 / R$ 10,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Vodka Ketel One</div></div><div class="pr">R$ 179,90 / R$ 14,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Vodka Ciroc</div></div><div class="pr">R$ 299,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Vodka Absolut</div></div><div class="pr">R$ 179,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Vodka Grey Goose</div></div><div class="pr">R$ 319,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Tequila José Cuervo Ouro</div></div><div class="pr">R$ 189,90 / R$ 19,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gin Beefeater</div></div><div class="pr">R$ 219,90 / R$ 18,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gin Tanqueray / Sevilla / Royale</div></div><div class="pr">R$ 219,90 / R$ 18,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gin Hendricks</div></div><div class="pr">R$ 219,90 / R$ 18,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gin Bulldog</div></div><div class="pr">R$ 219,90 / R$ 18,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Gin Bombay Saphire</div></div><div class="pr">R$ 219,90 / R$ 18,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Cachaça Ypioca Prata</div></div><div class="pr">R$ 7,90 (dose)</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Cachaça Sagatiba Velha</div></div><div class="pr">R$ 169,90 / R$ 18,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Cachaça Leblon</div></div><div class="pr">R$ 199,90 / R$ 24,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Cachaça Leblon Signature</div></div><div class="pr">R$ 229,90 / R$ 34,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Licor 43</div></div><div class="pr">R$ 290,90 / R$ 29,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Licor Baileys</div></div><div class="pr">R$ 199,90 / R$ 24,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Licor Cointreau</div></div><div class="pr">R$ 199,90 / R$ 24,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Licor Frangelico</div></div><div class="pr">R$ 299,90 / R$ 34,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espumante Casa Perini Rosé / Brut</div></div><div class="pr">R$ 129,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espumante Moët Chandon</div></div><div class="pr">R$ 679,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espumante Veuve Clicquot</div></div><div class="pr">R$ 679,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espumante Chandon Brut</div></div><div class="pr">R$ 169,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espumante Chandon Rosé</div></div><div class="pr">R$ 179,90</div></div>
+      <div class="menu-line"><div class="info"><div class="nm">Espumante Chandon Passion</div></div><div class="pr">R$ 189,90</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat" id="vinhos" style="border-bottom:none">
+  <div class="wrap">
+    <div class="cat-head"><h2>Carta de Vinhos</h2><div class="note">África do Sul, Argentina, Brasil, Chile, Espanha, França, Itália, Portugal e Uruguai.</div></div>
+
+    <div class="sommelier-head">
+      <h3>Sugestão do sommelier</h3>
+      <p>Seis rótulos escolhidos pela casa, dois deles premiados pela James Suckling.</p>
+    </div>
+    <div class="sommelier-grid">
+      <div class="som-card">
+        <div class="som-photo">
+          <img src="../assets/vinho-montes-purple-angel.png" alt="Garrafa Montes Purple Angel 2020">
+          <div class="score-ring" style="--target:2.14px" data-score="98">
+            <svg viewBox="0 0 50 50" width="42" height="42"><circle class="ring-bg" cx="21" cy="21" r="17"/><circle class="ring-fg" cx="21" cy="21" r="17"/></svg>
+            <span class="num">0</span>
+          </div>
+        </div>
+        <div class="som-info">
+          <h4>Montes Purple Angel 2020</h4>
+          <div class="grape">Carménère · 98 pts James Suckling</div>
+          <p class="note">Cor rubi profundo. Nariz elegante, com frutas silvestres maduras e especiarias doces, notas de chocolate amargo e café do envelhecimento em carvalho francês. Taninos maduros e longa persistência.</p>
+          <span class="price">R$ 1.510,00</span>
+        </div>
+      </div>
+      <div class="som-card">
+        <div class="som-photo">
+          <img src="../assets/vinho-montes-alpha-m.png" alt="Garrafa Montes Alpha M Red 2020">
+          <div class="score-ring" style="--target:3.20px" data-score="97">
+            <svg viewBox="0 0 50 50" width="42" height="42"><circle class="ring-bg" cx="21" cy="21" r="17"/><circle class="ring-fg" cx="21" cy="21" r="17"/></svg>
+            <span class="num">0</span>
+          </div>
+        </div>
+        <div class="som-info">
+          <h4>Montes Alpha M Red 2020</h4>
+          <div class="grape">Corte Bordalês · 97 pts James Suckling</div>
+          <p class="note">Cor rubi profundo. Aromas de frutas pretas maduras, cassis, cereja e ameixa, com toque mentolado e especiarias. Encorpado e untuoso, com grande equilíbrio e final longo.</p>
+          <span class="price">R$ 1.510,00</span>
+        </div>
+      </div>
+      <div class="som-card">
+        <div class="som-photo">
+          <img src="../assets/vinho-calvet-bordeaux.png" alt="Garrafa Calvet Bordeaux Superior">
+          <span class="casa-badge">Casa</span>
+        </div>
+        <div class="som-info">
+          <h4>Calvet Bordeaux Superior</h4>
+          <div class="grape">Gran Reserva · Merlot, Cabernet Sauvignon</div>
+          <p class="note">Nariz poderoso e complexo, com aromas de frutas vermelhas e especiarias. Ataque agradável e estruturado, sabores de cereja e pinceladas de baunilha.</p>
+          <span class="price">R$ 199,90</span>
+        </div>
+      </div>
+      <div class="som-card">
+        <div class="som-photo">
+          <img src="../assets/vinho-zolla-primitivo.png" alt="Garrafa Zolla Primitivo di Manduria">
+          <span class="casa-badge">Casa</span>
+        </div>
+        <div class="som-info">
+          <h4>Zolla Primitivo di Manduria</h4>
+          <div class="grape">100% Primitivo</div>
+          <p class="note">Cor púrpura profundo, aromas concentrados e típicos da primitivo, ameixas e especiarias doces. Encorpado e aveludado, com notas de chocolate e frutas em compota.</p>
+          <span class="price">R$ 229,99</span>
+        </div>
+      </div>
+      <div class="som-card">
+        <div class="som-photo">
+          <img src="../assets/vinho-pocas-tinto.png" alt="Garrafa Poças Tinto Douro">
+          <span class="casa-badge">Casa</span>
+        </div>
+        <div class="som-info">
+          <h4>Poças Tinto (Douro)</h4>
+          <div class="grape">Touriga Nacional, Touriga Franca</div>
+          <p class="note">Produzido com uvas do Douro Superior, vinificado na Quinta das Quartas. Boa intensidade aromática, notas de frutas vermelhas maduras, frescor e bom equilíbrio.</p>
+          <span class="price">R$ 229,99</span>
+        </div>
+      </div>
+      <div class="som-card">
+        <div class="som-photo">
+          <img src="../assets/vinho-vieux-chateau.png" alt="Garrafa Vieux Chateau des Jouans">
+          <span class="casa-badge">Casa</span>
+        </div>
+        <div class="som-info">
+          <h4>Vieux Chateau des Jouans</h4>
+          <div class="grape">Saint-Émilion · Merlot, Cabernet Sauvignon</div>
+          <p class="note">Cor rubi bela e profunda, nariz poderoso com notas de cereja em calda, alcaçuz e especiarias. Ataque aveludado, final longo, aromas de compota de frutas e cedro.</p>
+          <span class="price">R$ 249,99</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-list two-col">
+      <div class="wine-country">África do Sul</div>
+      <div class="wine-line"><div><div class="nm">Lyngrove Collection</div><div class="ds">100% Pinotage</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Lyngrove Collection</div><div class="ds">100% Chenin Blanc</div></div><div class="pr">R$ 130</div></div>
+
+      <div class="wine-country">Argentina</div>
+      <div class="wine-line"><div><div class="nm">Callia Tardio</div><div class="ds">100% Torrontés</div></div><div class="pr">R$ 100</div></div>
+      <div class="wine-line"><div><div class="nm">Signos</div><div class="ds">100% Malbec</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Árbol de las Mariposas</div><div class="ds">100% Torrontés</div></div><div class="pr">R$ 100</div></div>
+      <div class="wine-line"><div><div class="nm">Árbol de las Mariposas Reserva</div><div class="ds">100% Cabernet Franc</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Árbol de las Mariposas Reserva</div><div class="ds">100% Malbec</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Árbol de las Mariposas Reserva</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Martino</div><div class="ds">100% Malbec</div></div><div class="pr">R$ 160</div></div>
+
+      <div class="wine-country">Brasil</div>
+      <div class="wine-line"><div><div class="nm">Espumante Conde</div><div class="ds">Brut</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Espumante Casa Perini</div><div class="ds">Brut Rosé</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Aurora Gran Reserva</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Aurora Gran Reserva</div><div class="ds">100% Tannat</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Aurora Gran Reserva</div><div class="ds">100% Touriga Nacional</div></div><div class="pr">R$ 130</div></div>
+
+      <div class="wine-country">Chile</div>
+      <div class="wine-line"><div><div class="nm">Apalta Clássico</div><div class="ds">100% Sauvignon Blanc</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Apalta Clássico</div><div class="ds">100% Chardonnay</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Apalta Clássico</div><div class="ds">100% Carménère</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Apalta Clássico</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Tantehue</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Pucón Reserva</div><div class="ds">100% Syrah</div></div><div class="pr">R$ 100</div></div>
+      <div class="wine-line"><div><div class="nm">Pucón Reserva</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Pucón Reserva</div><div class="ds">100% Syrah</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Pucón Reserva</div><div class="ds">100% Pinot Noir</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Pucón Reserva</div><div class="ds">100% Merlot</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Ventisquero Reserva</div><div class="ds">100% Sauvignon Blanc</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Ventisquero Reserva</div><div class="ds">100% Chardonnay</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Ventisquero Reserva</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Ventisquero Gran Reserva Queulat</div><div class="ds">100% Sauvignon Blanc</div></div><div class="pr">R$ 140</div></div>
+      <div class="wine-line"><div><div class="nm">Farmus Gran Reserva</div><div class="ds">100% Chardonnay</div></div><div class="pr">R$ 140</div></div>
+      <div class="wine-line"><div><div class="nm">Ventisquero Gran Reserva Queulat</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Ventisquero Gran Reserva Queulat</div><div class="ds">100% Carménère</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Pisque Gran Reserva</div><div class="ds">100% Petit Verdot</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Pisque Gran Reserva</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">São José de Apalta Reserva</div><div class="ds">100% Carménère</div></div><div class="pr">R$ 120</div></div>
+
+      <div class="wine-country">Espanha</div>
+      <div class="wine-line"><div><div class="nm">Viña Albali</div><div class="ds">100% Tempranillo</div></div><div class="pr">R$ 100</div></div>
+      <div class="wine-line"><div><div class="nm">Viña Albali Crianza</div><div class="ds">100% Tempranillo</div></div><div class="pr">R$ 150</div></div>
+
+      <div class="wine-country">França</div>
+      <div class="wine-line"><div><div class="nm">Calvet Rosé</div><div class="ds">100% Cinsault</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Espumante Calvet Celebration</div><div class="ds">Brut Rosé</div></div><div class="pr">R$ 140</div></div>
+      <div class="wine-line"><div><div class="nm">Calvet</div><div class="ds">100% Cabernet Sauvignon</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Calvet</div><div class="ds">100% Merlot</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Franc Beauséjour Bordeaux</div><div class="ds">Merlot, Cabernet Sauvignon, Cabernet Franc</div></div><div class="pr">R$ 150</div></div>
+      <div class="wine-line"><div><div class="nm">Calvet Bordeaux Superior</div><div class="ds">Gran Reserva · Merlot, Cabernet Sauvignon</div></div><div class="pr">R$ 200</div></div>
+      <div class="wine-line"><div><div class="nm">Vieux Chateau des Jouans</div><div class="ds">Saint-Émilion · Merlot, Cabernet Sauvignon</div></div><div class="pr">R$ 250</div></div>
+
+      <div class="wine-country">Itália</div>
+      <div class="wine-line"><div><div class="nm">Codici Fiano Puglia</div><div class="ds">100% Fiano</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Esperanto Rosé</div><div class="ds">100% Primitivo</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Mezzacorona</div><div class="ds">100% Pinot Grigio</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Mezzacorona</div><div class="ds">100% Chardonnay</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Esperanto</div><div class="ds">100% Montepulciano d'Abruzzo</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Esperanto</div><div class="ds">100% Primitivo di Puglia</div></div><div class="pr">R$ 120</div></div>
+      <div class="wine-line"><div><div class="nm">Casine Chianti</div><div class="ds">Sangiovese, Canaiolo</div></div><div class="pr">R$ 150</div></div>
+      <div class="wine-line"><div><div class="nm">Fontenulla</div><div class="ds">Montepulciano d'Abruzzo</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Fontenulla</div><div class="ds">100% Primitivo Salento</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Zolla Primitivo di Manduria</div><div class="ds">Primitivo, Merlot, Cabernet Sauvignon, Cabernet Franc</div></div><div class="pr">R$ 230</div></div>
+
+      <div class="wine-country">Portugal</div>
+      <div class="wine-line"><div><div class="nm">Calamares</div><div class="ds">Loureiro, Azal, Trajadura, Perdena</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Monte da Castinha</div><div class="ds">Encruzado, Cercial, Malvasia Fina</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Monte da Castinha</div><div class="ds">Touriga Nacional, Jaen, Alfrocheiro, Tinta Roriz</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Bons Ventos</div><div class="ds">Castelão, Tinta Miúda, Touriga Nacional</div></div><div class="pr">R$ 100</div></div>
+      <div class="wine-line"><div><div class="nm">Vila Nova</div><div class="ds">100% Loureiro</div></div><div class="pr">R$ 130</div></div>
+      <div class="wine-line"><div><div class="nm">Vila Nova</div><div class="ds">100% Alvarinho</div></div><div class="pr">R$ 150</div></div>
+      <div class="wine-line"><div><div class="nm">Herdade de São Miguel</div><div class="ds">Antão Vaz, Arinto, Verdelho, Viognier</div></div><div class="pr">R$ 150</div></div>
+      <div class="wine-line"><div><div class="nm">Herdade São Miguel</div><div class="ds">Alicante Bouschet, Touriga Nacional, Syrah, Cabernet Sauvignon</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Bons Vento (Douro DOC)</div><div class="ds">Touriga Nacional, Touriga Franca, Sousão</div></div><div class="pr">R$ 160</div></div>
+      <div class="wine-line"><div><div class="nm">Poças Tinto (Douro)</div><div class="ds">Touriga Nacional, Touriga Franca</div></div><div class="pr">R$ 230</div></div>
+
+      <div class="wine-country">Uruguai</div>
+      <div class="wine-line"><div><div class="nm">Don Pascual</div><div class="ds">100% Chardonnay</div></div><div class="pr">R$ 110</div></div>
+      <div class="wine-line"><div><div class="nm">Don Pascual</div><div class="ds">Tannat, Merlot</div></div><div class="pr">R$ 90</div></div>
+      <div class="wine-line"><div><div class="nm">Don Pascual Reserva</div><div class="ds">100% Tannat</div></div><div class="pr">R$ 120</div></div>
+    </div>
+
+    <div class="cat-head" style="margin-top:40px;margin-bottom:0">
+      <h2 style="font-size:22px">Taças</h2>
+      <div class="menu-list two-col" style="margin-top:16px">
+        <div class="wine-line"><div class="nm">Taça de vinho branco</div><div class="pr">R$ 35</div></div>
+        <div class="wine-line"><div class="nm">Taça de vinho tinto</div><div class="pr">R$ 35</div></div>
+        <div class="wine-line"><div class="nm">Taça de vinho do Porto</div><div class="pr">R$ 26</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </div>
+  <aside class="menu-panel" id="menu-panel">
+    <h3>Categorias</h3>
+    <div class="cat-search" id="cat-search-desktop">
+      <input type="text" id="search-input-desktop" placeholder="Buscar prato, bebida, ingrediente..." aria-label="Buscar no cardápio">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <button class="clear-btn" aria-label="Limpar busca">&times;</button>
+    </div>
+    <div class="search-summary" id="search-summary-desktop" aria-live="polite"></div>
+    <ul class="cat-list" id="cat-list-desktop"></ul>
+  </aside>
+</div>
+
+<button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-cta">
+      <a class="btn-gold" href="https://wa.me/5521971258080?text=Oi!%20Quero%20reservar%20uma%20mesa%20na%20Villa%20Blu%C3%A9" target="_blank" rel="noopener">Reservar mesa</a>
+      <a class="btn-outline" href="index.html">Voltar ao site</a>
+    </div>
+    <div class="credit">Protótipo de demonstração desenvolvido por Kintech Studio</div>
+  </div>
+</footer>
+
+<script>
+  if (typeof Lenis !== 'undefined') {
+    const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+  }
+
+  const scoreObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const ring = entry.target;
+      ring.classList.add('in-view');
+      const score = parseInt(ring.dataset.score, 10);
+      if (score) {
+        const numEl = ring.querySelector('.num');
+        const start = performance.now();
+        const dur = 1400;
+        function tick(now){
+          const p = Math.min((now - start) / dur, 1);
+          numEl.textContent = Math.round(score * p);
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+      scoreObserver.unobserve(ring);
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.score-ring').forEach(r => scoreObserver.observe(r));
+</script>
+
+<script>
+(function(){
+  const CATS = [
+    { id: 'executivo', label: 'Executivo' },
+    { id: 'entradas', label: 'Entradas' },
+    { id: 'carnes', label: 'Carnes' },
+    { id: 'massas', label: 'Massas' },
+    { id: 'peixes', label: 'Peixes & Frutos do Mar' },
+    { id: 'risotos', label: 'Risotos' },
+    { id: 'kids', label: 'Villa Kids' },
+    { id: 'sobremesas', label: 'Sobremesas' },
+    { id: 'coquetelaria', label: 'Coquetelaria' },
+    { id: 'bebidas', label: 'Cervejas & Sucos' },
+    { id: 'destilados', label: 'Destilados' },
+    { id: 'vinhos', label: 'Carta de Vinhos' },
+  ];
+
+  function itemsOf(section){ return Array.from(section.querySelectorAll('.menu-line, .wine-line')); }
+
+  function buildList(ul){
+    ul.innerHTML = CATS.map(c => {
+      const section = document.getElementById(c.id);
+      const total = itemsOf(section).length;
+      const a11y = c.label + (total ? ', ' + total + (total === 1 ? ' item' : ' itens') : '');
+      return `<li><a href="#${c.id}" data-cat="${c.id}" aria-label="${a11y}">${c.label}${total ? `<span class="cnt">${total}</span>` : ''}</a></li>`;
+    }).join('');
+  }
+  const listDesktop = document.getElementById('cat-list-desktop');
+  const listDrawer = document.getElementById('cat-list-drawer');
+  buildList(listDesktop);
+  buildList(listDrawer);
+
+  let searchTerm = '';
+
+  function updateCounts(){
+    CATS.forEach(c => {
+      const section = document.getElementById(c.id);
+      const items = itemsOf(section);
+      const hasDiscreteItems = items.length > 0;
+      const visible = items.filter(el => el.style.display !== 'none').length;
+      [listDesktop, listDrawer].forEach(ul => {
+        const a = ul.querySelector('a[data-cat="' + c.id + '"]');
+        if (!a) return;
+        const cnt = a.querySelector('.cnt');
+        if (!hasDiscreteItems) return; // coquetelaria: conteúdo em imagem, sem contagem de item
+        if (cnt) cnt.textContent = visible;
+        a.classList.toggle('zero', !!searchTerm && visible === 0);
+      });
+    });
+  }
+
+  // ---- scroll-spy ----
+  const sections = CATS.map(c => document.getElementById(c.id)).filter(Boolean);
+  const mobBarActive = document.getElementById('mob-bar-active');
+  function setActive(id){
+    [listDesktop, listDrawer].forEach(ul => {
+      ul.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.dataset.cat === id));
+    });
+    const cat = CATS.find(c => c.id === id);
+    if (cat && mobBarActive) mobBarActive.textContent = cat.label;
+  }
+  setActive('executivo');
+  const spyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) setActive(entry.target.id); });
+  }, { rootMargin: '-110px 0px -70% 0px', threshold: 0 });
+  sections.forEach(s => spyObserver.observe(s));
+
+  // ---- busca (sem acento, tempo real, com destaque) ----
+  function normalize(str){ return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function applyHighlight(item, rawTerm){
+    ['.nm', '.ds'].forEach(sel => {
+      const el = item.querySelector(sel);
+      if (!el) return;
+      if (el.dataset.orig === undefined) el.dataset.orig = el.textContent;
+      const orig = el.dataset.orig;
+      if (!rawTerm) { el.textContent = orig; return; }
+      const re = new RegExp('(' + escapeRegex(rawTerm) + ')', 'ig');
+      el.innerHTML = re.test(orig) ? orig.replace(re, '<mark>$1</mark>') : orig;
+    });
+  }
+
+  const searchDesktop = document.getElementById('search-input-desktop');
+  const searchDrawer = document.getElementById('search-input-drawer');
+  const summaryDesktop = document.getElementById('search-summary-desktop');
+  const summaryDrawer = document.getElementById('search-summary-drawer');
+  const emptyState = document.getElementById('empty-state');
+
+  function applySearch(term){
+    searchTerm = term;
+    const norm = normalize(term.trim());
+    let totalVisible = 0;
+    let totalItems = 0;
+
+    CATS.forEach(c => {
+      const section = document.getElementById(c.id);
+      const items = itemsOf(section);
+      if (!items.length) return; // coquetelaria não é filtrável (conteúdo em imagem)
+      items.forEach(item => {
+        const text = normalize(item.textContent);
+        const match = !norm || text.includes(norm);
+        item.style.display = match ? '' : 'none';
+        applyHighlight(item, term.trim());
+        totalItems++;
+        if (match) totalVisible++;
+      });
+      section.querySelectorAll('.wine-country').forEach(h => {
+        let sib = h.nextElementSibling, any = false;
+        while (sib && !sib.classList.contains('wine-country')) {
+          if (sib.classList.contains('wine-line') && sib.style.display !== 'none') any = true;
+          sib = sib.nextElementSibling;
+        }
+        h.style.display = (norm && !any) ? 'none' : '';
+      });
+    });
+
+    updateCounts();
+    [searchDesktop, searchDrawer].forEach(inp => {
+      if (!inp) return;
+      if (inp.value !== term) inp.value = term;
+      inp.closest('.cat-search').classList.toggle('has-value', !!term);
+    });
+    const summaryText = norm ? (totalVisible + (totalVisible === 1 ? ' item encontrado' : ' itens encontrados') + ' para "' + term.trim() + '"') : '';
+    if (summaryDesktop) summaryDesktop.textContent = summaryText;
+    if (summaryDrawer) summaryDrawer.textContent = summaryText;
+    emptyState.style.display = (norm && totalVisible === 0) ? 'block' : 'none';
+  }
+
+  [searchDesktop, searchDrawer].forEach(inp => {
+    if (!inp) return;
+    inp.addEventListener('input', () => applySearch(inp.value));
+  });
+  document.querySelectorAll('.clear-btn').forEach(btn => btn.addEventListener('click', () => applySearch('')));
+  document.getElementById('empty-clear-btn').addEventListener('click', () => applySearch(''));
+
+  // ---- drawer de categorias (mobile/tablet) ----
+  const drawer = document.getElementById('cat-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  const openBtn = document.getElementById('drawer-open');
+  const closeBtn = document.getElementById('drawer-close');
+  const searchOpenBtn = document.getElementById('mob-search-open');
+  let lastFocused = null;
+
+  function openDrawer(focusSearch){
+    lastFocused = document.activeElement;
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    openBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+    (focusSearch ? searchDrawer : closeBtn).focus();
+  }
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    openBtn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+  openBtn.addEventListener('click', () => openDrawer(false));
+  searchOpenBtn.addEventListener('click', () => openDrawer(true));
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer(); });
+  drawer.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const focusable = drawer.querySelectorAll('a, button, input');
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  listDrawer.addEventListener('click', (e) => { if (e.target.closest('a')) closeDrawer(); });
+
+  // ---- voltar ao topo ----
+  const backBtn = document.getElementById('back-to-top');
+  const heroSentinel = document.querySelector('.top');
+  const backObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => backBtn.classList.toggle('show', !entry.isIntersecting));
+  }, { rootMargin: '-200px 0px 0px 0px' });
+  if (heroSentinel) backObserver.observe(heroSentinel);
+  backBtn.addEventListener('click', () => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+})();
+</script>
+
+</body>
+</html>
